@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ action }} Location</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-center mb-8">{{ action }} Location</h1>
+        
+        <form method="POST">
+            <div class="mb-4">
+                <label for="name" class="block text-sm font-medium text-gray-700">Location Name</label>
+                <input id="name" name="name" type="text" class="w-full p-2 border rounded" value="{{ location.name }}" required>
+            </div>
+            <div class="mb-4">
+                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+                <textarea id="description" name="description" class="w-full p-2 border rounded" required>{{ location.description }}</textarea>
+            </div>
+            <div class="mb-4">
+                <label for="lat" class="block text-sm font-medium text-gray-700">Latitude</label>
+                <input id="lat" name="lat" type="text" class="w-full p-2 border rounded" value="{{ location.lat }}" required>
+            </div>
+            <div class="mb-4">
+                <label for="lon" class="block text-sm font-medium text-gray-700">Longitude</label>
+                <input id="lon" name="lon" type="text" class="w-full p-2 border rounded" value="{{ location.lon }}" required>
+            </div>
+            <div class="mb-4">
+                <label for="wiki" class="block text-sm font-medium text-gray-700">Wikipedia URL</label>
+                <input id="wiki" name="wiki" type="url" class="w-full p-2 border rounded" value="{{ location.wiki }}">
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">{{ action }} Location</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Detected Location: {{ location.name }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <style>
+        /* می‌توانید استایل‌های بیشتری اینجا اضافه کنید */
+        #map { height: 300px; /* افزایش ارتفاع نقشه */ }
+    </style>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/service-worker.js')
+          .then(() => console.log('Service Worker registered'))
+          .catch(err => console.error('SW registration failed', err));
+      }
+    </script>
+    
+</head>
+<body class="bg-gradient-to-r from-green-100 via-blue-100 to-purple-200 min-h-screen p-4 md:p-10 flex flex-col items-center justify-center font-sans">
+
+    <div class="bg-white rounded-3xl shadow-2xl p-6 md:p-8 max-w-4xl w-full transition-all duration-300">
+        <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-6">
+            <span class="text-green-600">📍</span> Detected Location
+        </h1>
+
+        <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6 md:gap-8">
+            <div class="w-full lg:w-1/2 flex justify-center">
+                <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Uploaded Image for {{ location.name }}"
+                     class="rounded-xl shadow-lg w-full max-w-md h-auto object-cover border-4 border-gray-200">
+            </div>
+
+            <div class="w-full lg:w-1/2 flex flex-col justify-center text-gray-700 space-y-4 mt-4 lg:mt-0">
+                <h2 class="text-xl md:text-2xl font-semibold text-center lg:text-left">{{ location.name }}</h2>
+                <p class="text-base md:text-lg text-center lg:text-left">{{ location.description }}</p>
+                {% if confidence %}
+                <p class="text-sm text-gray-500 text-center lg:text-left">Model Confidence: {{ confidence }}%</p>
+                {% endif %}
+                {% if location.wiki %}
+                <p class="text-center lg:text-left">
+                    <a href="{{ location.wiki }}" target="_blank" rel="noopener noreferrer"
+                       class="text-blue-600 hover:text-blue-800 hover:underline transition duration-200">
+                        Learn more on Wikipedia ↗
+                    </a>
+                </p>
+                {% endif %}
+                <div id="map" class="w-full rounded-xl shadow-md border border-gray-300">
+                    <p class="text-center text-gray-500 p-4">Loading map...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8 text-center">
+            <a href="{{ url_for('index') }}"
+               class="inline-block bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1">
+                📸 Upload Another Image
+            </a>
+        </div>
+    </div>
+
+    <footer class="mt-8 text-center text-gray-600 text-sm">
+        Image Location Detector &copy; 2025
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script>
+        // اطمینان از اجرای کد بعد از بارگذاری کامل DOM
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                const lat = {{ location.lat }};
+                const lon = {{ location.lon }};
+                const locationName = "{{ location.name | escape }}"; // Escape برای جلوگیری از XSS
+
+                // ایجاد نقشه
+                const map = L.map('map', {
+                    center: [lat, lon],
+                    zoom: 14, // تنظیم زوم مناسب
+                    zoomControl: true, // نمایش کنترل‌های زوم
+                    scrollWheelZoom: false // غیرفعال کردن زوم با اسکرول ماوس (برای تجربه بهتر در صفحات وب)
+                });
+
+                // اضافه کردن لایه نقشه از OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors'
+                }).addTo(map);
+
+                // اضافه کردن مارکر به نقشه
+                const marker = L.marker([lat, lon]).addTo(map);
+
+                // اضافه کردن پاپ‌آپ به مارکر (با نام مکان)
+                marker.bindPopup(`<b>${locationName}</b>`).openPopup();
+
+            } catch (error) {
+                console.error("Error initializing Leaflet map:", error);
+                // نمایش پیام خطا در محل نقشه
+                const mapDiv = document.getElementById('map');
+                if (mapDiv) {
+                    mapDiv.innerHTML = '<p class="text-center text-red-500 p-4">Could not load map.</p>';
+                }
+            }
+        });
+    </script>
+    </body>
+</html>

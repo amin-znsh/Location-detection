@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-center mb-8">Admin Dashboard</h1>
+        <div class="flex justify-between items-center mb-4">
+            <a href="{{ url_for('admin_logout') }}" class="bg-red-500 text-white px-4 py-2 rounded">Logout</a>
+            <a href="{{ url_for('admin_add_location') }}" class="bg-blue-500 text-white px-4 py-2 rounded">Add New Location</a>
+        </div>
+
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-lg">
+            <thead>
+                <tr>
+                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Location</th>
+                    <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for location in locations %}
+                    <tr>
+                        <td class="px-6 py-4 text-sm text-gray-800">{{ location.name }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-800">
+                            <a href="{{ url_for('admin_edit_location', id=location.id) }}" class="text-yellow-500 hover:text-yellow-600">Edit</a> |
+                            <a href="{{ url_for('admin_delete_location', id=location.id) }}" class="text-red-500 hover:text-red-600">Delete</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2" class="px-6 py-4 text-center text-gray-500">No locations available.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <script>
+                {% for category, message in messages %}
+                    Swal.fire({
+                        icon: '{{ category }}' === 'success' ? 'success' : 'error',
+                        title: '{{ message }}',
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                {% endfor %}
+            </script>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

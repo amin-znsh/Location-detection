@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Upload Image | Location Detector</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/service-worker.js')
+          .then(() => console.log('Service Worker registered'))
+          .catch(err => console.error('SW registration failed', err));
+      }
+    </script>
+</head>
+<body class="bg-gradient-to-r from-green-100 via-blue-100 to-purple-200 min-h-screen flex items-center justify-center p-6">
+
+    <div class="bg-white p-8 rounded-3xl shadow-2xl text-center w-full max-w-lg">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">📸 Upload an Image to Detect Location</h1>
+
+        <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="space-y-5">
+            <input type="file" name="image" accept="image/*" required
+                class="block w-full text-sm text-gray-700
+                       file:mr-4 file:py-3 file:px-6
+                       file:rounded-full file:border-0
+                       file:text-sm file:font-semibold
+                       file:bg-violet-100 file:text-violet-700
+                       hover:file:bg-violet-200 transition duration-200" />
+
+            <input type="submit" value="Upload and Detect"
+                class="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-bold py-3 px-6 rounded-full transition duration-300" />
+        </form>
+
+        <div class="mt-6">
+            <a href="{{ url_for('admin_login') }}"
+               class="inline-block text-sm text-violet-600 hover:text-violet-800 hover:underline transition duration-200">
+                🔐 Go to Admin Panel
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
